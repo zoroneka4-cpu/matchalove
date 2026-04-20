@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD Nurul Aini 17th</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --matcha-bg: #acca85;
+            --matcha-dark: #7c9663;
+            --matcha-light: #e0eacc;
+            --text-color: #334e14;
+            --white-trans: rgba(255, 255, 255, 0.9);
+            --cake-layer-1: #ffffff;
+            --cake-layer-2: #e0eacc;
+            --cake-layer-3: #7c9663;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body, html {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--matcha-light) 0%, var(--matcha-bg) 100%);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .main-container {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--white-trans);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+            border: 2px solid white;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.5s ease 0.4s;
+        }
+
+        .active-slide .card { transform: scale(1); opacity: 1; }
+
+        .surprise-anim {
+            animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 15px; color: var(--matcha-dark); }
+        .script-font { font-family: 'Great Vibes', cursive; font-size: 3rem; color: #556b2f; }
+
+        .btn {
+            background-color: var(--matcha-dark);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .btn:hover { background-color: #556b2f; transform: translateY(-2px); }
+
+        video {
+            width: 100%;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            background: #000;
+        }
+
+        .cake-container {
+            position: relative;
+            display: inline-block;
+            margin: 40px 0 20px 0;
+            cursor: pointer;
+            width: 150px;
+            height: 180px;
+        }
+
+        .candles-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            z-index: 10;
+        }
+
+        .candle {
+            width: 10px;
+            height: 45px;
+            background: linear-gradient(to bottom, #acca85, #fff);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .flame {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 20px;
+            background: radial-gradient(ellipse at bottom, #fff 0%, #ffeb3b 20%, #ff9800 50%, #f44336 100%);
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 12px rgba(255, 152, 0, 0.8);
+            animation: flicker 0.1s infinite alternate;
+            transition: all 0.4s ease;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1) rotate(-1deg); }
+            100% { transform: translateX(-50%) scale(1.05) rotate(1deg); }
+        }
+
+        .smoke {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 0;
+            background: rgba(150, 150, 150, 0.7);
+            filter: blur(8px);
+            opacity: 0;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .extinguished .flame { opacity: 0; transform: translateX(-50%) scale(0); }
+        .extinguished .smoke { animation: rise-smoke 2s ease-out forwards; }
+
+        @keyframes rise-smoke {
+            0% { opacity: 0; height: 10px; width: 4px; transform: translateX(-50%) translateY(0); }
+            20% { opacity: 0.8; }
+            100% { opacity: 0; height: 70px; width: 35px; transform: translateX(-90%) translateY(-50px); }
+        }
+
+        .cake-layers {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cake-layer { border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .layer-top { width: 100px; height: 40px; background-color: var(--cake-layer-1); margin-bottom: -2px; z-index: 3; }
+        .layer-middle { width: 125px; height: 45px; background-color: var(--cake-layer-2); margin-bottom: -2px; z-index: 2; }
+        .layer-bottom { width: 150px; height: 50px; background-color: var(--cake-layer-3); z-index: 1; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="main-container" id="mainContainer">
+        
+        <section class="slide active-slide">
+            <div class="card">
+                <p class="script-font">Halo Nurul Aini...</p>
+                <h1>Sudah Siap?</h1>
+                <p>Ada kejutan kecil buat kamu di slide berikutnya.</p>
+                <button class="btn" onclick="goToSlide(1)">Iya, Siap!</button>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="card">
+                <h1>Special For You</h1>
+                <video id="birthdayVideo" controls>
+                    <source src="https://www.image2url.com/r2/default/videos/1776705189092-041a929a-0cc0-454a-832e-e4ae6f1d0a78.mp4" type="video/mp4">
+                </video>
+                <button class="btn" onclick="goToSlide(2)">Lanjut</button>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="card">
+                <h1>Make a Wish</h1>
+                <div class="cake-container" id="candle-box" onclick="extinguishAll()">
+                    <div class="candles-row" id="candles-wrapper">
+                        <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
+                        <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
+                        <div class="candle"><div class="flame"></div><div class="smoke"></div></div>
+                    </div>
+                    <div class="cake-layers">
+                        <div class="cake-layer layer-top"></div>
+                        <div class="cake-layer layer-middle"></div>
+                        <div class="cake-layer layer-bottom"></div>
+                    </div>
+                </div>
+                <p id="status">Tiup mikrofonmu atau klik kuenya!</p>
+                <button class="btn hidden" id="nextBtn" onclick="goToSlide(3)">Lihat Pesan Terakhir</button>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="card" id="lastCard">
+                <p class="script-font">Happy Birthday</p>
+                <h1 style="color: #556b2f;">Nurul Aini</h1>
+                <p>Selamat bertambah usia. Semoga semua mimpimu jadi nyata, dan aku selalu ada di sampingmu untuk merayakannya. Stay sweet like matcha! 💚</p>
+                <a href="https://wa.me/6285185926986?text=Makasih%20sayang!%20Lilinnya%20udah%20aku%20tiup%20hehee%20sekarang%20mana%20hadia%20ku%20niii" class="btn">🎁 KLAIM HADIAH</a>
+                <br>
+                <button class="btn" style="background-color: #7c9663; margin-top: 10px; opacity: 0.8;" onclick="resetExperience()">🔄 ULANG</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const vid = document.getElementById('birthdayVideo');
+        let audioContext, analyser, microphone, isExtinguished = false;
+
+        function goToSlide(index) {
+            const container = document.getElementById('mainContainer');
+            const slides = document.querySelectorAll('.slide');
+            container.style.transform = `translateX(-${index * 100}vw)`;
+            
+            slides.forEach(s => s.classList.remove('active-slide'));
+            slides[index].classList.add('active-slide');
+
+            if (index === 1) {
+                if(vid) vid.play().catch(() => {});
+            } else {
+                if(vid) vid.pause();
+            }
+
+            if (index === 2) {
+                initMic();
+            }
+
+            if (index === 3) {
+                document.getElementById('lastCard').classList.add('surprise-anim');
+                createConfetti();
+            }
+        }
+
+        async function initMic() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                microphone.connect(analyser);
+
+                function checkBlow() {
+                    if (isExtinguished) return;
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for(let i = 0; i < bufferLength; i++) sum += dataArray[i];
+                    let average = sum / bufferLength;
+                    
+                    if (average > 45) { 
+                        extinguishAll();
+                    }
+                    requestAnimationFrame(checkBlow);
+                }
+                checkBlow();
+            } catch (err) {
+                document.getElementById('status').innerText = "Mic tidak aktif. Klik kuenya saja!";
+            }
+        }
+
+        function extinguishAll() {
+            if (isExtinguished) return;
+            isExtinguished = true;
+            
+            document.getElementById('candles-wrapper').classList.add('extinguished');
+            document.getElementById('status').innerHTML = "<span style='color: #2e7d32; font-weight: bold;'>Hore! Lilinnya padam! 🥳</span>";
+            
+            setTimeout(() => {
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.classList.remove('hidden');
+            }, 800);
+            
+            if (audioContext && audioContext.state !== 'closed') audioContext.close();
+        }
+
+        function resetExperience() {
+            goToSlide(0);
+            isExtinguished = false;
+            document.getElementById('candles-wrapper').classList.remove('extinguished');
+            document.getElementById('status').innerText = "Tiup mikrofonmu atau klik kuenya!";
+            document.getElementById('nextBtn').classList.add('hidden');
+            if(vid) vid.currentTime = 0;
+        }
+
+        function createConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particles = [];
+            const colors = ['#acca85', '#7c9663', '#ffffff', '#ffeb3b', '#f44336'];
+
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    angle: Math.random() * 6.28
+                });
+            }
+
+            function update() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.y += p.speed;
+                    p.x += Math.sin(p.angle) * 2;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                if (document.querySelector('.slide:nth-child(4)').classList.contains('active-slide')) {
+                    requestAnimationFrame(update);
+                }
+            }
+            update();
+        }
+    </script>
+</body>
+                      </html>
+                      
